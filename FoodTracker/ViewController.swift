@@ -14,6 +14,7 @@ class ViewController: UIViewController, UITextFieldDelegate, UIImagePickerContro
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var mealNameLabel: UILabel!
     @IBOutlet weak var photoImageView: UIImageView!
+    @IBOutlet weak var ratingControl: RatingControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,9 +71,4 @@ class ViewController: UIViewController, UITextFieldDelegate, UIImagePickerContro
         // Implicity called on ViewController to present another controller as a modal
         present(imagePickerController, animated: true, completion: nil)
     }
-    
-    @IBAction func setDefaultLabelText(_ sender: UIButton) {
-        mealNameLabel.text = "Default Text"
-    }
-    
 }
