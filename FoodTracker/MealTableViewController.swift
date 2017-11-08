@@ -105,7 +105,24 @@ class MealTableViewController: UITableViewController {
     }
     */
     
-    //MARK: Private Methods
+    // MARK: Actions
+    @IBAction func unwindToMealList(sender: UIStoryboardSegue) {
+        
+        // try to downcast UIViewController as MealViewController
+        if let source = sender.source as? MealViewController, let meal = source.meal {
+            
+            // if downcast succesful and not nil, proceed to add new meal
+            let newIndexPath = IndexPath(row: meals.count, section: 0)
+            
+            // add meal to array
+            meals.append(meal)
+            
+            // animates the addition of the new row with 'automatic' animation
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        }
+    }
+    
+    // MARK: Private Methods
     private func loadSampleMeals() {
         let photo1 = UIImage(named: "meal1")
         let photo2 = UIImage(named: "meal2")

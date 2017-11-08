@@ -2,6 +2,8 @@
 //  MealTableViewCell.swift
 //  FoodTracker
 //
+// Acts as a model for TableViewController???
+//
 //  Created by Phil on 11/7/17.
 //  Copyright © 2017 phlfvry. All rights reserved.
 //

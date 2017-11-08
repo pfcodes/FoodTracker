@@ -2,7 +2,7 @@
 //  Meal.swift
 //  FoodTracker
 //
-//  This is the data model for the app.
+//  This is the data model for Meal instances
 //
 //  Created by Phil on 11/6/17.
 //  Copyright © 2017 phlfvry. All rights reserved.

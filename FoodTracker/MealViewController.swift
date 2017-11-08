@@ -7,20 +7,33 @@
 //
 
 import UIKit
+import os.log
 
-class ViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // MARK: Properties
+    // This is how to identify storyboard objects. Added with ctrl+dragndrop
     @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var mealNameLabel: UILabel!
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var ratingControl: RatingControl!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    
+    /*
+     Either passed by `MealTableViewController` in `prepare(for:sender:)`
+     or constructed as part of adding a new meal from the modal in the storyboard.
+     Optional because it may or may not have a value.
+     Also, in Swift theres no need to import the Meal class definition which is in another file
+     */
+    var meal: Meal?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Handle the text field's user input through delegate callbacks.
         nameTextField.delegate = self // self refers to ViewController class
+        
+        // Enable save button only if text field is in a valid state
+        updateSaveButtonState()
     }
     
     // MARK: UITextFieldDelegate
@@ -31,8 +44,14 @@ class ViewController: UIViewController, UITextFieldDelegate, UIImagePickerContro
         return true
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // Disable the save button while editing
+        saveButton.isEnabled = false
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField) {
-        mealNameLabel.text = textField.text
+        updateSaveButtonState()
+        navigationItem.title = textField.text
     }
     
     // MARK: UIImagePickerControllerDelegate
@@ -54,6 +73,33 @@ class ViewController: UIViewController, UITextFieldDelegate, UIImagePickerContro
         dismiss(animated: true, completion: nil)
     }
     
+    // MARK: Navigation
+    @IBAction func cancel(_ sender: UIBarButtonItem) {
+        // Dismisses the modal scene in an animated fashion
+        // Neither prepare(for:sender:) or unwind action method is called
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    // Allows view controllers to be configured before presented.
+    // Use for passing data between viewcontrollers and more
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        super.prepare(for: segue, sender: sender)
+        
+        // Prepare the destination view controller only when the save button is pressed
+        guard let button = sender as? UIBarButtonItem, button === saveButton else {
+            os_log("The save button was not pressed, cancelling", log: OSLog.default, type: .debug)
+            return
+        }
+        
+        let name = nameTextField.text ?? "" // '??' is nil coalescing operator returns default value if optional has no value"
+        let photo = photoImageView.image
+        let rating = ratingControl.rating
+        
+        // Passed to MealTableViewController after the unwind segue
+        meal = Meal(name: name, photo: photo, rating: rating)
+    }
+    
     // MARK: Actions
     @IBAction func selectImageFromPhotoLibrary(_ sender: UITapGestureRecognizer) {
         // Hide the keyboard.
@@ -70,5 +116,12 @@ class ViewController: UIViewController, UITextFieldDelegate, UIImagePickerContro
         
         // Implicity called on ViewController to present another controller as a modal
         present(imagePickerController, animated: true, completion: nil)
+    }
+    
+    // MARK: Private Methods
+    private func updateSaveButtonState() {
+        // Disable the save button if the text field is empty
+        let text = nameTextField.text ?? ""
+        saveButton.isEnabled = !text.isEmpty
     }
 }
