@@ -18,6 +18,9 @@ class MealTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Use the edit button provided by the table view controller.
+        navigationItem.leftBarButtonItem = editButtonItem
+        
         // Load sample data
         loadSampleMeals()
         
@@ -60,25 +63,26 @@ class MealTableViewController: UITableViewController {
     }
     
 
-    /*
+    
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
-    */
+    
 
-    /*
+    
     // Override to support editing the table view.
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
+            meals.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .fade)
         } else if editingStyle == .insert {
             // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
         }    
     }
-    */
+    
 
     /*
     // Override to support rearranging the table view.
@@ -134,14 +138,22 @@ class MealTableViewController: UITableViewController {
         // try to downcast UIViewController as MealViewController
         if let source = sender.source as? MealViewController, let meal = source.meal {
             
-            // if downcast succesful and not nil, proceed to add new meal
-            let newIndexPath = IndexPath(row: meals.count, section: 0)
-            
-            // add meal to array
-            meals.append(meal)
-            
-            // animates the addition of the new row with 'automatic' animation
-            tableView.insertRows(at: [newIndexPath], with: .automatic)
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                // Update an existing meal
+                meals[selectedIndexPath.row] = meal
+                tableView.reloadRows(at: [selectedIndexPath], with: .none)
+            } else {
+                
+                // if downcast succesful and not nil, proceed to add new meal
+                let newIndexPath = IndexPath(row: meals.count, section: 0)
+                
+                // add meal to array
+                meals.append(meal)
+                
+                // animates the addition of the new row with 'automatic' animation
+                tableView.insertRows(at: [newIndexPath], with: .automatic)
+                
+            }
         }
     }
     
